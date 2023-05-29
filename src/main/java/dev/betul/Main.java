@@ -5,6 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
+
 
 @SpringBootApplication
 @RestController
@@ -37,6 +40,28 @@ public class Main {
         customer.setEmail(request.email());
         customer.setAge(request.age());
         customerRepository.save(customer);
+    }
+    @DeleteMapping("{customerId}")
+    public void deleteCustomer(@PathVariable("customerId") UUID id){
+        customerRepository.deleteById(id);
+    }
+
+    record UpdateCustomerRequest(String name, String email, Integer age){
+
+    }
+
+    @PutMapping("{customerId}")
+    public Customer updateCustomer(@PathVariable("customerId") UUID id, @RequestBody UpdateCustomerRequest request){
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Customer not found"));
+        customer.setName(request.name());
+        customer.setEmail(request.email());
+        customer.setAge(request.age());
+        return customerRepository.save(customer);
+    }
+
+    @GetMapping("{customerId}")
+    public Customer getCustomer(@PathVariable("customerId") UUID id){
+        return customerRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Customer not found"));
     }
 }
 
