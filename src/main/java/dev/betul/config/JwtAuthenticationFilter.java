@@ -1,5 +1,7 @@
 package dev.betul.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailService;
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     @Override
     protected void doFilterInternal(
@@ -44,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication()==null){
             UserDetails userDetails = this.userDetailService.loadUserByUsername(userEmail);
             if(jwtService.isTokenValid(jwt, userDetails)){
-                System.out.println("Token is valid and user is"+ userDetails );
+                logger.info("Token is valid and user is "+ userDetails);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
